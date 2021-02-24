@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: predict-sentiment-deployment
+  labels:
+    app: predict-sentiment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: predict-sentiment
+  template:
+    metadata:
+      labels:
+        app: predict-sentiment
+    spec:
+      containers:
+        - name: predict-sentiment
+          image: gcr.io/geeroar/predict-sentiment:latest
+          ports:
+            - containerPort: 5000
+              name: flask-app
