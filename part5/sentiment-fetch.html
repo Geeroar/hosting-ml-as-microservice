@@ -1,6 +1,6 @@
 <!--
   This page is available at:
-  https://storage.googleapis.com/geeroar-static-sites/gee/sentiment.html
+  https://storage.googleapis.com/geeroar-static-sites/gee/sentiment-fetch.html
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -12,20 +12,22 @@
       button { width: 100px; height: 25px; display: block; }
     </style>
     <script>
-    var score = function() {
+    var outputResult = (review, sentiment) => {
+      document.getElementById("output").innerHTML +=
+                    `<div>${review}: ${sentiment}</div>`;
+    };
+    var score = () => {
       const ENDPOINT = 'https://us-central1-geeroar.cloudfunctions.net/movie-review-sentiment';
-      var xhttp = new XMLHttpRequest();
       var review = document.getElementById("review").value;
-      xhttp.onreadystatechange = function() {
-          if (this.readyState == 4 && this.status == 200) {
-             document.getElementById("output").innerHTML +=
-                          "<div>" + review + ": " + xhttp.responseText + "</div>";
-          }
-      };
-      xhttp.open("POST", ENDPOINT, true);
-      xhttp.setRequestHeader("Content-Type", "application/json");
-      xhttp.send(JSON.stringify({"review": review}));
-    }
+      fetch(ENDPOINT, {
+        body: JSON.stringify({"review": review}),
+        headers: {'Content-Type': 'application/json'},
+        method: 'POST',
+        mode: 'cors',
+      })
+      .then(response => response.text())
+      .then(sentiment => outputResult(review, sentiment))
+    };
     </script>
   </head>
   <body>
